@@ -8,13 +8,6 @@ import librosa.display
 import cPickle as cP
 
 
-base_dir = '/media/bach4/kylee/MSD_mel/MSD_split/'
- 
-id7d_to_path = cP.load(open(base_dir + '7D_id_to_path.pkl','r'))
-idmsd_to_id7d = cP.load(open(base_dir + 'MSD_id_to_7D_id.pkl','r'))
-idechonest_to_idmsd = cP.load(open(base_dir + 'echonest_id_to_MSD_id.pkl', 'r'))
-
-
 # ### Process and save melspectrogram 
 # As done in paper "AUTOMATIC TAGGING USING DEEP CONVOLUTIONAL NEURAL NETWORKS"   
 # sampling rate downsampled to 12kHz  
@@ -22,20 +15,18 @@ idechonest_to_idmsd = cP.load(open(base_dir + 'echonest_id_to_MSD_id.pkl', 'r'))
 # mel bins 96  
 # hop size 256 samples  
 
+def create_melspectrogram(song_list, base_dir, mel_dir, song_dir, SR, n_fft, hop_size, n_mels, audio_len):
 
-n_mels = 96
-hop_size = 256
-n_fft = 512
-SR = 12000
-audio_len=29.15
+     
+    id7d_to_path = cP.load(open(base_dir + '7D_id_to_path.pkl','r'))
+    idmsd_to_id7d = cP.load(open(base_dir + 'MSD_id_to_7D_id.pkl','r'))
+    idechonest_to_idmsd = cP.load(open(base_dir + 'echonest_id_to_MSD_id.pkl', 'r'))
 
-
-def create_melspectrogram(song_list, mel_dir, dir_path, SR, n_fft, hop_size, n_mels, audio_len):
     for i in range(len(song_list)):
         song_tag = song_list[i]
         
         save_file = mel_dir + song_tag + '.npy'
-        audio_file = dir_path + id7d_to_path[idmsd_to_id7d[idechonest_to_idmsd[song_tag]]]
+        audio_file = song_dir  + id7d_to_path[idmsd_to_id7d[idechonest_to_idmsd[song_tag]]]
         
         if not os.path.exists(os.path.dirname(save_file)):
             os.makedirs(os.path.dirname(save_file))
@@ -78,6 +69,14 @@ def create_melspectrogram(song_list, mel_dir, dir_path, SR, n_fft, hop_size, n_m
 
 
 if __name__ =='__main__':
+
+    n_mels = 96
+    hop_size = 256
+    n_fft = 512
+    SR = 12000
+    audio_len=29.15
+    
+    base_dir = '/media/bach4/kylee/MSD_mel/MSD_split/'
     song_path = "/media/bach2/dataset/MSD/songs/"
     my_path = '/media/bach4/kylee/triplenet-data/'
     song_list = np.load(my_path + 'songs.npy')
